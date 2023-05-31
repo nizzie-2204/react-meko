@@ -1,4 +1,5 @@
-import { JSX, useCallback, useRef } from 'react';
+import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/solid';
+import React, { JSX, useCallback, useMemo, useRef } from 'react';
 
 import Image1 from '../assets/images/carousel-image-1.webp';
 import Image2 from '../assets/images/carousel-image-2.webp';
@@ -6,83 +7,92 @@ import Image3 from '../assets/images/carousel-image-3.webp';
 import Image4 from '../assets/images/carousel-image-4.webp';
 import Image5 from '../assets/images/carousel-image-5.webp';
 import Image6 from '../assets/images/carousel-image-6.webp';
+
+const images = [
+  Image1,
+  Image2,
+  Image3,
+  Image4,
+  Image5,
+  Image6,
+  Image1,
+  Image2,
+  Image3,
+  Image4,
+  Image5,
+  Image6,
+];
+
+const CONTAINER_IMAGE_WIDTH = 288;
+
 export const Carousel = (): JSX.Element => {
   const carouselRef = useRef<HTMLDivElement | null>(null);
 
-  const handleMove = useCallback((isPrev: boolean) => {
+  const handleMove = useCallback((isPrev?: boolean) => {
     const container = carouselRef.current;
 
-    console.log(container?.scrollLeft);
-    console.log(container?.clientWidth);
-
     if (container) {
-      const pixelPerScroll = container.children[0].clientWidth;
+      const scrollLeft = container.scrollLeft;
+      const clientWidth = container.clientWidth;
+      const scrollWidth = container.scrollWidth;
+      const isLastItem = scrollWidth === scrollLeft + clientWidth;
+      const isFirstItem = scrollLeft === 0;
 
-      container?.scrollTo({
+      if ((isLastItem && !isPrev) || (isFirstItem && isPrev)) return;
+
+      const pixelPerScroll = CONTAINER_IMAGE_WIDTH + 16;
+
+      container.scrollTo({
         top: 0,
         left:
-          container?.scrollLeft + (isPrev ? -pixelPerScroll : pixelPerScroll),
+          container.scrollLeft + (isPrev ? -pixelPerScroll : pixelPerScroll),
       });
     }
   }, []);
+
+  const renderList = useMemo(() => {
+    return images.map((item, index) => {
+      return (
+        <div
+          key={Date.now() + index}
+          className={`w-[288px] cursor-pointer shrink-0 h-96 p-4 rounded-xl border border-gray-300 flex flex-col justify-center`}
+        >
+          <img
+            src={item}
+            alt={`product-${index}`}
+            className="h-full w-auto object-contain"
+          />
+          <div className="text-sm font-medium text-black mb-4 text-center">
+            Samsung Galaxy Z Fold3 5G 3 colors in 512GB
+          </div>
+        </div>
+      );
+    });
+  }, []);
+
   return (
     <div className="carousel my-12 mx-auto w-[1200px]">
-      <div className="relative overflow-hidden">
-        <div className="flex justify-between absolute top left w-full h-full">
-          <button
+      <div className="flex flex-col space-y-5">
+        <div className="flex justify-between">
+          <div
             onClick={() => handleMove(true)}
-            className="hover:bg-blue-900/75 text-white w-10 h-full text-center opacity-75 hover:opacity-100 disabled:opacity-25 disabled:cursor-not-allowed z-10 p-0 m-0 transition-all ease-in-out duration-300"
+            className=" cursor-pointer bg-gray-200 rounded-full flex items-center justify-center p-2"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-20 -ml-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            <span className="sr-only">Prev</span>
-          </button>
-          <button
+            <ArrowLeftIcon className="text-black w-5 h-5" />
+          </div>
+          <div className="text-4xl font-semibold text-red-500">Flash sale</div>
+          <div
             onClick={() => handleMove(false)}
-            className="hover:bg-blue-900/75 text-white w-10 h-full text-center opacity-75 hover:opacity-100 disabled:opacity-25 disabled:cursor-not-allowed z-10 p-0 m-0 transition-all ease-in-out duration-300"
+            className="cursor-pointer bg-gray-200 rounded-full flex items-center justify-center p-2"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-20 -ml-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 5l7 7-7 7"
-              />
-            </svg>
-            <span className="sr-only">Next</span>
-          </button>
+            <ArrowRightIcon className="text-black w-5 h-5" />
+          </div>
         </div>
         <div
           ref={carouselRef}
-          className="carousel-container relative flex overflow-x-scroll scroll-smooth"
+          className="relative flex overflow-x-hidden gap-4 scroll-smooth border-gray-200"
         >
-          <div className="w-[300px] h-40">
-            <img src={Image1} alt="ra" className="h-full w-auto object-cover" />
-          </div>
-          <img src={Image2} alt="ra" className="w-1/4 shadow-slate-50" />
-          <img src={Image3} alt="ra" className="w-1/4" />
-          <img src={Image4} alt="ra" className="w-1/4" />
-          <img src={Image4} alt="ra" className="w-1/4" />
-          <img src={Image5} alt="ra" className="w-1/4" />
-          <img src={Image6} alt="ra" className="w-1/4" />
+          {renderList}
         </div>
       </div>
     </div>

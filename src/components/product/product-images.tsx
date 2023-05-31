@@ -1,13 +1,13 @@
 import React, { JSX, useState } from 'react';
 
-import Product1 from '../../assets/images/product-details-1.png';
-import Product2 from '../../assets/images/product-details-2.png';
-import Product3 from '../../assets/images/product-details-3.png';
+import Product1 from '../../assets/images/carousel-image-1.webp';
+import Product2 from '../../assets/images/carousel-image-2.webp';
+import Product3 from '../../assets/images/carousel-image-3.webp';
+
+const IMAGES = [Product1, Product2, Product3];
 
 export const ProductImages = (): JSX.Element => {
-  const images: string[] = [Product1, Product2, Product3];
-
-  const [selectedImage, setSelectedImage] = useState<string>(images[0]);
+  const [selectedImage, setSelectedImage] = useState<string>(IMAGES[0]);
 
   return (
     <div className="w-1/2 flex flex-col space-y-6">
@@ -15,16 +15,16 @@ export const ProductImages = (): JSX.Element => {
         <img src={selectedImage} alt="selectedImage" />
       </div>
       <div className="flex items-center space-x-5">
-        {images.map((item, index) => {
+        {IMAGES.map((item, index) => {
           return (
             <div
               key={Date.now() + index}
               onClick={() => setSelectedImage(item)}
-              className="flex-1 flex items-center justify-center border border-gray-300 cursor-pointer"
+              className="flex-1 flex items-center justify-center border border-gray-300 cursor-pointer h-52 p-4"
             >
               <img
                 src={item}
-                alt="product-${index}"
+                alt={`product-${index}`}
                 className="w-full h-full object-cover"
               />
             </div>
